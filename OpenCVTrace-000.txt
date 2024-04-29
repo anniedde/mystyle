@@ -1,0 +1,2 @@
+#description: OpenCV trace file
+#version: 1.0

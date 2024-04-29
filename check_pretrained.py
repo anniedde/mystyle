@@ -24,11 +24,10 @@ sys.path.append('third_party/stylegan2_ada_pytorch')
 
 import infer_anchors
 from reconstruct.tune_net import Tuner
-from utils import io_utils, misc
+from utils import io_utils
 from utils.data_utils import PersonalizedDataset
 
 import torch
-from torch.utils.data import DataLoader
 
 
 def get_data(args):
@@ -40,16 +39,16 @@ def get_data(args):
                                        args.output_dir, args.verbose)
     return dataset
 
-def get_replay_data(args):
-    replay_dataset = infer_anchors.invert(args.replay_dir, args.encoder_checkpoint,
-                                          args.output_dir, args.verbose)
-    return replay_dataset
 
 def generate_from_anchors(generator, dataset, output_path):
     generator.eval()
     for sample in dataset:
-        img = generator(sample['w_code'].cuda(), noise_mode='const', force_fp32=True)
-        io_utils.save_images(img, output_path.joinpath(sample['name']))
+        img = generator(sample.w_code.cuda(), noise_mode='const', force_fp32=True)
+        io_utils.save_images(img, output_path.joinpath(sample.name))
+        output_path2 = f'out/sanity_check_anchors/'
+        #if not os.path.exists(output_path2):
+        #    os.makedirs(output_path2)
+        #io_utils.save_images(img, output_path2.joinpath(sample.name))
 
 
 def parse_args(raw_args=None):
@@ -62,11 +61,8 @@ def parse_args(raw_args=None):
     parser.add_argument('--output_dir', type=Path, required=True)
     parser.add_argument('--generator_path', type=Path, required=True)
 
-    # need one of these
     parser.add_argument('--anchor_dir', type=Path)
     parser.add_argument('--encoder_checkpoint', type=Path)
-
-    parser.add_argument('--replay_dir', type=Path, default=None)
 
     args = parser.parse_args(raw_args)
     return args
@@ -80,8 +76,7 @@ def process_args(args):
         raise ValueError(f'Image directory {args.images_dir} does not exist')
     if not args.generator_path.exists():
         raise ValueError(f'Domain checkpoint {args.generator_path} does not exist')
-    if args.output_dir.exists():
-        raise ValueError(f'Output directory {args.output_dir} already exists')
+
     args.output_dir.mkdir(exist_ok=True, parents=True)
     args.debug_output_dir = None
     if args.verbose:
@@ -96,28 +91,21 @@ def main(raw_args=None):
     args = process_args(args)
 
     dataset = get_data(args)
-    dataloader = DataLoader(dataset, batch_size=4, shuffle=True)
 
     generator = io_utils.load_net(args.generator_path)
 
-    if args.verbose:
-        generate_from_anchors(generator, dataset, args.debug_output_dir.joinpath('before'))
+    for anchor_name in os.listdir(args.anchor_dir):
+        anchor = torch.load(os.path.join(args.anchor_dir, anchor_name))
+        anchor = anchor.to(args.device)
+        img = generator(anchor, noise_mode='const', force_fp32=True)
+        # save img
+        img_name = anchor_name.split('.')[0]
+        io_utils.save_images(img, args.output_dir.joinpath(f'{img_name}.png'))
 
-    network_tuner = Tuner(args.device, generator, args.debug_output_dir.joinpath('during') if args.verbose else None)
-    #network_tuner.reconstruct(dataset)
-    if args.replay_dir is not None:
-        replay_dataset = get_replay_data(args)
-        replay_buffer_sampler = misc.InfiniteSampler(dataset=replay_dataset)
-        replay_iterator = iter(DataLoader(replay_dataset, sampler=replay_buffer_sampler, batch_size=4, shuffle=True))
-        network_tuner.reconstruct_with_replay(dataloader, replay_iterator)
-    else:
-        network_tuner.reconstruct(dataloader)
+        
 
-    torch.save(network_tuner.generator, args.output_dir.joinpath(f'mystyle_model.pt'))
-
-    if args.verbose:
-        generate_from_anchors(generator, dataset, args.debug_output_dir.joinpath('after'))
-
+    #if args.verbose:
+    #    generate_from_anchors(generator, dataset, args.debug_output_dir.joinpath('before'))
 
 if __name__ == '__main__':
     main()

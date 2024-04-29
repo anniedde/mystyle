@@ -107,8 +107,8 @@ def save_images(frames: torch.FloatTensor, output_path: Path):
         frames,
         output_path.with_suffix('.jpg'),
         nrow=frames.shape[0],
-        normalize=True,
-        range=(-1, 1)
+        normalize=True#,
+        #range=(-1, 1)
     )
 
 

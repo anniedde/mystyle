@@ -1,0 +1,17 @@
+python data_preprocess/0_align_face.py \
+    --images_dir /playpen-nas-ssd/awang/data/luchao_raw \
+    --save_dir out \
+    --trash_dir out/trash \
+    --landmarks_model helper_models/dlib_landmarks_model.dat
+
+python project.py \
+    --images_dir aligned_faces \
+    --output_dir out_inverted \
+    --anchor_dir /path/to/models_anchors \
+    --generator_path /path/to/personalized/generator
+
+python train.py \
+    --images_dir /path/to/dir/of/ready/training/images \
+    --output_dir /path/to/save/results \
+    --generator_path /path/to/pretrained/domain-generator \
+    --encoder_checkpoint /path/to/pretrained/inversion/encoder 

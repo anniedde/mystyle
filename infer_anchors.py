@@ -42,7 +42,7 @@ def process_args(args):
     if not args.images_dir.exists():
         raise ValueError(f'Image directory {args.images_dir} does not exist')
 
-    args.output_dir.joinpath('latents').mkdir(exist_ok=True, parents=True)
+    #args.output_dir.joinpath('latents').mkdir(exist_ok=True, parents=True)
 
     if args.verbose:
         args.output_dir.joinpath('inversions').mkdir(exist_ok=True)

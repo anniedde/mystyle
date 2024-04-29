@@ -22,7 +22,7 @@ import functools
 import multiprocessing
 from pathlib import Path
 
-sys.path.append('..')
+sys.path.append('/playpen-nas-ssd/awang/mystyle')
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 from utils import io_utils

@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  """
-
+import os
 import tkinter as tk
 from tkinter import messagebox
 
@@ -95,27 +95,39 @@ class PersonIdentifier:
                             'When an image pops up, press "y" to approve it or any other key to decline.')
 
     def manual_is_same_person(self, img):
-        if self.first_manual_run:
-            self.message_box()
-            self.first_manual_run = False
-
+        #if self.first_manual_run:
+        #    self.message_box()
+        #    self.first_manual_run = False
+        print('hello')
         bgr_img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        print('um?')
         window_name = f'Press "y" to approve or any other key to decline'
+        print(os.environ['DISPLAY'])
+        cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
+        print('okkk')
         cv2.imshow(window_name, bgr_img)
+        print('showed window')
         key = cv2.waitKey()
         cv2.destroyWindow(window_name)
-
+        print('destroyed window')
+        print('returning ', key == ord('y'))
         return key == ord('y')
 
     def verify_id(self, img, img_name):
         if len(self.features_dict.keys()) < self.num_examples:
+            print('manually verifying')
             same_person = self.manual_is_same_person(img)
             add_to_examples = same_person and True
+            print('add to examples:', add_to_examples)
         else:
             same_person = self.auto_is_same_person(img)
             add_to_examples = False
 
         if add_to_examples:
+            print('in add_to_examples')
             self.features_dict[img_name] = self.get_feature(img)
+            print('features dict: ', self.features_dict)
+            print('len of features dict:', len(self.features_dict))
+            print('num_examples:', self.num_examples)
 
         return same_person

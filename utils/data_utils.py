@@ -52,7 +52,8 @@ class ImageReps:
             self.recon_img = recon_img.detach().cpu()
 
     def save_latent(self, output_path: Path):
-        io_utils.save_latents(self.w_code, output_path.joinpath('w', self.name).with_suffix('.pt'))
+        #io_utils.save_latents(self.w_code, output_path.joinpath('w', self.name).with_suffix('.pt'))
+        io_utils.save_latents(self.w_code, output_path.joinpath(self.name).with_suffix('.pt'))
         io_utils.save_latents(self.alpha, output_path.joinpath('alpha', self.name).with_suffix('.pt'))
 
     def save_input(self, output_path: Path):
@@ -84,6 +85,7 @@ class ImageReps:
 class PersonalizedDataset(Dataset):
     def __init__(self, images_dir: Path, latent_dir: Path = None, mask_dir: Path = None):
         self.samples = []
+        self.items = []
 
         transform = transforms.Compose([
             transforms.ToTensor(),
@@ -107,6 +109,9 @@ class PersonalizedDataset(Dataset):
             sample = ImageReps.load_sample(img_path, latent_path, mask_path, transform)
             self.samples.append(sample)
 
+            item = {'w_code': sample.w_code, 'img': sample.img, 'name': sample.name}
+            self.items.append(item)
+
     def save_latents(self, output_path):
         for rep in self.samples:
             rep.save_latent(output_path)
@@ -116,7 +121,10 @@ class PersonalizedDataset(Dataset):
             rep.save_recon(output_path)
 
     def __len__(self):
-        return len(self.samples)
+        #return len(self.samples)
+        return len(self.items)
 
     def __getitem__(self, idx):
-        return self.samples[idx]
+        #sample = self.samples[idx]
+        #return self.samples[idx]
+        return self.items[idx]

@@ -14,13 +14,13 @@
  limitations under the License.
  """
 
-import sys
+import sys, os
 import shutil
 import logging
 from pathlib import Path
+import traceback
 
-sys.path.append('..')
-
+sys.path.append('/playpen-nas-ssd/awang/mystyle_original')
 from utils import id_utils, io_utils
 
 import numpy as np
@@ -90,7 +90,7 @@ def get_landmark_of_right_person(filepath, predictor, person_identifier, min_id_
 
 
 def process_single_image(filepath, lnds_predictor, person_identifier=None,
-                         output_size=1024, transform_size=4096, min_size=512,
+                         output_size=512, transform_size=4096, min_size=512,
                          enable_padding=True, min_id_size=0):
     img, lm = get_landmark_of_right_person(filepath, lnds_predictor, person_identifier, min_id_size)
     if len(lm) == 0:
@@ -160,7 +160,7 @@ def process_single_image(filepath, lnds_predictor, person_identifier=None,
 
     # Transform.
     if max(img.size) < min_size:
-        logging.info(f'{filepath.name}: Aligned face too small, not using for dataset. Face size: {img.size}')
+        logging.info(f'{filepath.name}: Aligned face too small, not using for dataset. Face size: {img.size}.')
         return None
 
     img = img.transform((transform_size, transform_size), PIL.Image.QUAD, (quad + 0.5).flatten(),
@@ -212,8 +212,12 @@ def process_args(args):
 
 
 def main(raw_args=None):
+    os.environ['DISPLAY'] = ':1'
     args = parse_args(raw_args)
     args = process_args(args)
+
+    # Configure logging to output to console
+    logging.basicConfig(level=logging.INFO)
 
     images_paths = io_utils.get_images_in_dir(args.images_dir)
     lnds_predictor = dlib.shape_predictor(str(args.landmarks_model))
@@ -222,12 +226,21 @@ def main(raw_args=None):
     if args.id_model:
         person_identifier = id_utils.PersonIdentifier(args.id_model, args.id_bank_size, args.id_threshold)
 
+    print('min_size:', args.min_size)
     for image_path in tqdm(images_paths):
         file_name = image_path.name
         try:
             aligned_img = process_single_image(image_path, lnds_predictor, person_identifier,
                                                output_size=args.output_size, min_size=args.min_size,
                                                min_id_size=args.min_id_size)
+            """
+            if aligned_img is None:
+                superres_path = str(image_path).replace('raw', 'superres')
+                superres_path = Path(superres_path)
+                aligned_img = process_single_image(superres_path, lnds_predictor, person_identifier,
+                                               output_size=args.output_size, min_size=0,
+                                               min_id_size=0)
+            """
             if aligned_img is None:
                 raise Exception('Alignment returned None')
             output_file = args.save_dir.joinpath(file_name)
@@ -236,6 +249,7 @@ def main(raw_args=None):
             output_file = args.trash_dir.joinpath(file_name)
             shutil.copy2(image_path, output_file)
             logging.info(f'Failed aligning {file_name}, because {e}')
+            exit()
 
 
 if __name__ == "__main__":

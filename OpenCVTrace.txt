@@ -1,0 +1,14 @@
+#description: OpenCV trace file
+#version: 1.0
+l,1,"/io/opencv/modules/core/src/utils/logtagmanager.cpp",72,"void cv::utils::logging::LogTagManager::assign(const string&, cv::utils::logging::LogTag*)",0x1
+#thread file: OpenCVTrace-000.txt
+l,2,"/io/opencv/modules/core/src/utils/logtagmanager.cpp",104,"cv::utils::logging::LogTag* cv::utils::logging::LogTagManager::get(const string&)",0x1
+l,3,"/io/opencv/modules/imgproc/src/color.cpp",194,"void cv::cvtColor(cv::InputArray, cv::OutputArray, int, int)",0x1
+l,4,"/io/opencv/modules/imgproc/src/color_rgb.dispatch.cpp",188,"void cv::hal::cvtBGRtoBGR(const uchar*, size_t, uchar*, size_t, int, int, int, int, int, bool)",0x1
+l,5,"/io/opencv/modules/highgui/src/window.cpp",448,"void cv::namedWindow(const String&, int)",0x1
+l,6,"/io/opencv/modules/core/src/glob.cpp",287,"void cv::glob(cv::String, std::vector<std::basic_string<char> >&, bool)",0x1
+l,7,"/io/opencv/modules/core/src/copy.cpp",508,"cv::Mat& cv::Mat::operator=(const Scalar&)",0x1
+l,8,"/io/opencv/modules/highgui/src/window.cpp",968,"void cv::imshow(const String&, cv::InputArray)",0x1
+l,9,"/io/opencv/modules/highgui/src/window.cpp",657,"int cv::waitKey(int)",0x1
+l,10,"/io/opencv/modules/highgui/src/window.cpp",641,"int cv::waitKeyEx(int)",0x1
+l,11,"/io/opencv/modules/highgui/src/window.cpp",488,"void cv::destroyWindow(const String&)",0x1
