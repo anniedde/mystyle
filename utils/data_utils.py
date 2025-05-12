@@ -109,16 +109,20 @@ class PersonalizedDataset(Dataset):
             sample = ImageReps.load_sample(img_path, latent_path, mask_path, transform)
             self.samples.append(sample)
 
-            item = {'w_code': sample.w_code, 'img': sample.img, 'name': sample.name}
+            item = {'w_code': sample.w_code, 'img': sample.img, 'name': sample.name, 'recon_img': sample.recon_img}
             self.items.append(item)
 
     def save_latents(self, output_path):
-        for rep in self.samples:
-            rep.save_latent(output_path)
+        #for rep in self.samples:
+        #    rep.save_latent(output_path)
+        for item in self.items:
+            io_utils.save_latents(item['w_code'], output_path.joinpath(item['name']).with_suffix('.pt'))
 
     def save_recons(self, output_path):
-        for rep in self.samples:
-            rep.save_recon(output_path)
+        #for rep in self.samples:
+        #    rep.save_recon(output_path)
+        for item in self.items:
+            io_utils.save_images(item['recon_img'], output_path.joinpath('out_image', item['name']).with_suffix('.jpg'))
 
     def __len__(self):
         #return len(self.samples)

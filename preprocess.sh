@@ -7,8 +7,8 @@ celeb=$1
 export CUDA_VISIBLE_DEVICES=$2
 
 # Define the start and end of the sequence
-start=0
-end=9
+start=10
+end=19
 
 # Use a for loop to iterate over the sequence
 for i in $(seq $start $end) all; do
@@ -20,7 +20,7 @@ for i in $(seq $start $end) all; do
         echo "Running data preprocessing for celeb $celeb, video $i"
 
         python data_preprocess/0_align_face.py \
-            --images_dir /playpen-nas-ssd/awang/data/mystyle/$celeb/$i/train/raw \
+            --images_dir /playpen-nas-ssd/awang/data/mystyle/$celeb/$i/train/superres \
             --save_dir $dir_path \
             --trash_dir /playpen-nas-ssd/awang/data/mystyle/$celeb/$i/train/trash \
             --landmarks_model helper_models/dlib_landmarks_model.dat \
@@ -36,7 +36,7 @@ for i in $(seq $start $end) all; do
         echo "Running data preprocessing for celeb $celeb, video $i, test set"
 
         python data_preprocess/0_align_face.py \
-            --images_dir /playpen-nas-ssd/awang/data/mystyle/$celeb/$i/test/raw \
+            --images_dir /playpen-nas-ssd/awang/data/mystyle/$celeb/$i/test/superres \
             --save_dir $dir_path \
             --trash_dir /playpen-nas-ssd/awang/data/mystyle/$celeb/$i/test/trash \
             --landmarks_model helper_models/dlib_landmarks_model.dat \

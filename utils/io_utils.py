@@ -16,6 +16,7 @@
 
 import pickle
 from pathlib import Path
+import sys
 
 from third_party.stylegan2_ada_pytorch import dnnlib
 from utils import latent_space_ops
@@ -76,7 +77,9 @@ def load_single_latent(latent_path: Path):
 def load_latents(latents_dir: Path, to_w=False):
     latents = []
     for f in latents_dir.iterdir():
-        if not (f.is_file() or f.suffix == '.pt'):
+        if not (f.is_file() and f.suffix == '.pt'):
+            continue
+        if f.stem == 'mystyle_model':
             continue
 
         latents.append(torch.load(f))
@@ -136,3 +139,13 @@ def get_images_in_dir(input_dir: Path):
     global IMAGE_SUFFIX
     image_fps = [fp for fp in input_dir.iterdir() if fp.suffix in IMAGE_SUFFIX]
     return image_fps
+
+class Logger(object):
+    def __init__(self, filename="Default.log"):
+        self.terminal = sys.stdout
+        self.log = open(filename, "a")
+
+    def write(self, message):
+        self.terminal.write(message)
+        self.log.write(message)
+        self.log.flush()

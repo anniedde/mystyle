@@ -87,6 +87,8 @@ def process_args(args):
     if args.verbose:
         args.debug_output_dir = args.output_dir.joinpath('debug')
         args.debug_output_dir.mkdir(exist_ok=True, parents=True)
+    sys.stdout = io_utils.Logger(args.output_dir.joinpath('log.txt'))
+    #args.f = open(args.output_dir.joinpath('log.txt'), 'w')
 
     return args
 
@@ -96,7 +98,8 @@ def main(raw_args=None):
     args = process_args(args)
 
     dataset = get_data(args)
-    dataloader = DataLoader(dataset, batch_size=4, shuffle=True)
+    batch_size = 2
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     generator = io_utils.load_net(args.generator_path)
 
@@ -108,7 +111,7 @@ def main(raw_args=None):
     if args.replay_dir is not None:
         replay_dataset = get_replay_data(args)
         replay_buffer_sampler = misc.InfiniteSampler(dataset=replay_dataset)
-        replay_iterator = iter(DataLoader(replay_dataset, sampler=replay_buffer_sampler, batch_size=4, shuffle=True))
+        replay_iterator = iter(DataLoader(replay_dataset, sampler=replay_buffer_sampler, batch_size=batch_size))
         network_tuner.reconstruct_with_replay(dataloader, replay_iterator)
     else:
         network_tuner.reconstruct(dataloader)

@@ -5,7 +5,7 @@ celeb=$1
 
 # Define the start and end of the sequence
 start=0
-end=9
+end=19
 
 # Use a for loop to iterate over the sequence
 for i in $(seq $start $end) all; do

@@ -126,6 +126,8 @@ class Tuner(BaseReconstructor):
                 tot_loss += loss.item()
 
             end_time = time()
-            print(f'step {step + 1:>4d}/{self.num_steps}: loss {float(tot_loss):<5.2f}. Time: {end_time - start_time:.2f}s')
+            if step % 20 == 0:
+                torch.save(self.generator, self.debug_out_path.joinpath(f'curr.pt'))
 
+            print(f'step {step + 1:>4d}/{self.num_steps}: loss {float(tot_loss):<5.2f}. Time: {end_time - start_time:.2f}s')
         return self.generator

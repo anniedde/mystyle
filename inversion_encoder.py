@@ -41,12 +41,12 @@ class InversionEncoder:
 
         print('Inverting an image dataset')
         for sample in tqdm(dataset):
-            enc_in = torch.clamp(F.interpolate(sample.img, 256, mode='bicubic'), -1, 1).to(self.device)
+            enc_in = torch.clamp(F.interpolate(sample['img'], 256, mode='bicubic'), -1, 1).to(self.device)
             out_img, w = self.encoder(enc_in,
                                       randomize_noise=False, return_latents=True,
                                       resize=False, input_code=False)
 
-            sample.w_code = w
-            sample.recon_img = out_img
+            sample['w_code'] = w
+            sample['recon_img'] = out_img
 
         return dataset

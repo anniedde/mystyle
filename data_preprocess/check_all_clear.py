@@ -35,7 +35,7 @@ def parse_args(raw_args=None):
 def main(raw_args=None):
     args = parse_args(raw_args)
 
-    vids = [f'{i}' for i in range(0, 10)]
+    vids = [f'{i}' for i in range(10, 20)]
     vids.append('all')
 
     root_dir = f'/playpen-nas-ssd/awang/data/mystyle/{args.celeb}'

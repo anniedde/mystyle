@@ -44,7 +44,7 @@ def synthesize(anchors_path, generator_path, output_path, num_points_to_sample, 
         imgs = generator(lats.squeeze(1), noise_mode='const', force_fp32=True)
 
         for j in range(min(batch_size, num_points_to_sample - i)):
-            save_image(imgs[j], output_path.joinpath('images', f'{i + j}.jpg'), nrow=1, normalize=True, range=(-1, 1))
+            save_image(imgs[j], output_path.joinpath('images', f'{i + j}.jpg'), nrow=1, normalize=True)#, range=(-1, 1))
             io_utils.save_latents(lats[j], output_path.joinpath('latents', f'{i + j}.pt'))
 
         del imgs
@@ -59,7 +59,7 @@ def parse_args(raw_args):
 
     parser.add_argument('--device', default='0')
 
-    parser.add_argument('--num_points_to_sample', type=int, default=30)
+    parser.add_argument('--num_points_to_sample', type=int, default=20)
     parser.add_argument('--num_anchors_for_sampling', type=int, default=3)
 
     args = parser.parse_args(raw_args)
